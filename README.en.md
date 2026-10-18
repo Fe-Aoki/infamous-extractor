@@ -3,6 +3,10 @@
 <p align="center"><img src="assets/infamous.png" width="120" alt="inFAMOUS Extractor: cyan arrow and orange extraction tray" /></p>
 <h1 align="center">inFAMOUS Extractor</h1>
 <p align="center"><strong>Your parts. Your update. One ready folder.</strong></p>
+<p align="center">
+  <a href="https://github.com/sponsors/Fe-Aoki"><img alt="Support Fe-Aoki on GitHub Sponsors" src="https://img.shields.io/badge/Sponsor-Fe--Aoki-ea4aaa?logo=githubsponsors&amp;logoColor=white" /></a>
+</p>
+<p align="center"><sub>Voluntary support for development. The application remains free and open source.</sub></p>
 <p align="center"><a href="https://github.com/Fe-Aoki/infamous-extractor/releases/latest"><strong>⬇ Download for Windows</strong></a> · <a href="https://github.com/Fe-Aoki/infamous-extractor/issues">Report an issue</a></p>
 <p align="center">
   <img alt="Windows x64" src="https://img.shields.io/badge/Windows-x64-4d8bff?style=flat-square" />

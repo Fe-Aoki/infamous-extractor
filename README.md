@@ -9,6 +9,11 @@
 <p align="center"><strong>Suas partes. Seu update. Uma pasta pronta.</strong></p>
 
 <p align="center">
+  <a href="https://github.com/sponsors/Fe-Aoki"><img alt="Apoie Fe-Aoki no GitHub Sponsors" src="https://img.shields.io/badge/Sponsor-Fe--Aoki-ea4aaa?logo=githubsponsors&amp;logoColor=white" /></a>
+</p>
+<p align="center"><sub>Apoio voluntário ao desenvolvimento. O programa continua gratuito e open source.</sub></p>
+
+<p align="center">
   <a href="https://github.com/Fe-Aoki/infamous-extractor/releases/latest"><strong>⬇ Baixar para Windows</strong></a> ·
   <a href="https://github.com/Fe-Aoki/infamous-extractor/issues">Relatar problema</a>
 </p>
