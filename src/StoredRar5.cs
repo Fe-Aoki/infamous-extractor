@@ -50,7 +50,7 @@ namespace Preparador
                 shift += 7;
             }
 
-            throw new InvalidDataException("RAR5: inteiro inválido.");
+            throw new InvalidDataException(L.T("RAR5: inteiro inválido."));
         }
 
         static byte[] ReadExact(Stream input, int count)
@@ -79,7 +79,7 @@ namespace Preparador
                 var candidates = Directory.GetFiles(Path.GetDirectoryName(first)).Select(p => new { Path = p, M = Regex.Match(Path.GetFileName(p), "^" + Regex.Escape(match.Groups[1].Value) + @"(\d+)\.rar$", RegexOptions.IgnoreCase) }).Where(x => x.M.Success).OrderBy(x => int.Parse(x.M.Groups[1].Value)).ToArray();
                 for (int i = 0; i < candidates.Length; i++)
                     if (int.Parse(candidates[i].M.Groups[1].Value) != i + 1)
-                        throw new InvalidDataException("RAR: falta um volume intermediário.");
+                        throw new InvalidDataException(L.T("RAR: falta um volume intermediário."));
                 paths = candidates.Select(x => x.Path).ToArray();
             }
             else
@@ -109,11 +109,11 @@ namespace Preparador
                             var bytes = new List<byte>();
                             ulong headerSize = Var(file, bytes);
                             if (headerSize > 1024 * 1024)
-                                throw new InvalidDataException("Cabeçalho RAR5 excessivo.");
+                                throw new InvalidDataException(L.T("Cabeçalho RAR5 excessivo."));
                             byte[] body = ReadExact(file, (int)headerSize);
                             bytes.AddRange(body);
                             if (Crc(bytes.ToArray()) != expected)
-                                throw new InvalidDataException("CRC de cabeçalho RAR5 incorreto.");
+                                throw new InvalidDataException(L.T("CRC de cabeçalho RAR5 incorreto."));
                             long dataOffset = file.Position;
                             using (var header = new MemoryStream(body))
                             {
@@ -139,7 +139,7 @@ namespace Preparador
                                     Var(header);
                                     ulong nameLength = Var(header);
                                     if (nameLength > 65536)
-                                        throw new InvalidDataException("Nome RAR5 excessivo.");
+                                        throw new InvalidDataException(L.T("Nome RAR5 excessivo."));
                                     string name = new UTF8Encoding(false, true).GetString(ReadExact(header, (int)nameLength));
                                     if ((fileFlags & 1) == 0)
                                     {
@@ -151,20 +151,20 @@ namespace Preparador
                                         }
 
                                         if (entryName != null && entryName != name)
-                                            throw new InvalidDataException("Volumes RAR pertencem a arquivos diferentes.");
+                                            throw new InvalidDataException(L.T("Volumes RAR pertencem a arquivos diferentes."));
                                         entryName = name;
                                         if (((flags & 8) != 0) != (index > 0) || ((flags & 16) != 0) != (index < paths.Length - 1))
-                                            throw new InvalidDataException("Conjunto RAR incompleto ou sequência inválida.");
+                                            throw new InvalidDataException(L.T("Conjunto RAR incompleto ou sequência inválida."));
                                         long extraStart = body.Length - checked((long)extra);
                                         if (extraStart < header.Position)
-                                            throw new InvalidDataException("RAR5: extras inválidos.");
+                                            throw new InvalidDataException(L.T("RAR5: extras inválidos."));
                                         header.Position = extraStart;
                                         while (header.Position < header.Length)
                                         {
                                             ulong recordSize = Var(header);
                                             long end = checked(header.Position + (long)recordSize);
                                             if (end > header.Length)
-                                                throw new InvalidDataException("RAR5: extra truncado.");
+                                                throw new InvalidDataException(L.T("RAR5: extra truncado."));
                                             ulong recordType = Var(header);
                                             if (recordType == 1 || recordType == 5)
                                             {
@@ -177,7 +177,7 @@ namespace Preparador
 
                                         long size = checked((long)dataSize);
                                         if (size <= 0 || dataOffset + size > file.Length)
-                                            throw new InvalidDataException("Volume RAR incompleto.");
+                                            throw new InvalidDataException(L.T("Volume RAR incompleto."));
                                         result.parts.Add(new Part { Path = paths[index], Offset = dataOffset, Size = size, Start = result.length });
                                         result.length = checked(result.length + size);
                                         found = true;
@@ -186,7 +186,7 @@ namespace Preparador
 
                                 long next = checked(dataOffset + (long)dataSize);
                                 if (next > file.Length)
-                                    throw new InvalidDataException("RAR5 truncado.");
+                                    throw new InvalidDataException(L.T("RAR5 truncado."));
                                 file.Position = next;
                             }
                         }
@@ -273,7 +273,7 @@ namespace Preparador
         {
             long next = origin == SeekOrigin.Begin ? off : origin == SeekOrigin.Current ? position + off : length + off;
             if (next < 0)
-                throw new IOException("Seek negativo.");
+                throw new IOException(L.T("Seek negativo."));
             position = next;
             return position;
         }

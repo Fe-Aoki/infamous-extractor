@@ -31,8 +31,8 @@ $project=(Resolve-Path (Join-Path $projectRoot 'vendor\LibOrbisPkg\LibOrbisPkg.C
 $sources=@($xml.Project.ItemGroup.Compile | Where-Object { $_.Include -and $_.Include -notlike '*AssemblyInfo.cs' } | ForEach-Object {[IO.Path]::GetFullPath((Join-Path ([IO.Path]::GetDirectoryName($project)) $_.Include))})
 Compile 'LibOrbisPkg.dll' $sources $refs ([Microsoft.CodeAnalysis.OutputKind]::DynamicallyLinkedLibrary)
 $appRefs=@($refs)+@([Microsoft.CodeAnalysis.MetadataReference]::CreateFromFile((Join-Path $root 'LibOrbisPkg.dll')))
-Compile 'Preparador-inFAMOUS.exe' @((Join-Path $projectRoot 'src\App.cs'),(Join-Path $projectRoot 'src\Engine.cs'),(Join-Path $projectRoot 'src\Theme.cs'),(Join-Path $projectRoot 'src\StoredRar5.cs')) $appRefs ([Microsoft.CodeAnalysis.OutputKind]::WindowsApplication)
+Compile 'Preparador-inFAMOUS.exe' @((Join-Path $projectRoot 'src\App.cs'),(Join-Path $projectRoot 'src\Engine.cs'),(Join-Path $projectRoot 'src\Theme.cs'),(Join-Path $projectRoot 'src\StoredRar5.cs'),(Join-Path $projectRoot 'src\Localization.cs')) $appRefs ([Microsoft.CodeAnalysis.OutputKind]::WindowsApplication)
 Copy-Item -LiteralPath (Join-Path $projectRoot 'src\App.config') -Destination (Join-Path $root 'Preparador-inFAMOUS.exe.config') -Force
 Copy-Item -LiteralPath (Join-Path $projectRoot 'licencas') -Destination $root -Recurse -Force
-foreach($file in @('LICENSE','THIRD_PARTY_NOTICES.md','README.md')){Copy-Item -LiteralPath (Join-Path $projectRoot $file) -Destination $root -Force}
+foreach($file in @('LICENSE','THIRD_PARTY_NOTICES.md','README.md','README.en.md')){Copy-Item -LiteralPath (Join-Path $projectRoot $file) -Destination $root -Force}
 Write-Output 'BUILD_OK'

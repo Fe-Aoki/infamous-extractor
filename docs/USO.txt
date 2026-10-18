@@ -1,4 +1,4 @@
-PREPARADOR inFAMOUS — versão 0.6
+PREPARADOR inFAMOUS — versão 0.7
 Windows x64 / .NET Framework 4.8. Não exige PowerShell para usar.
 
 COMO USAR
@@ -110,3 +110,7 @@ O ICO contém resoluções 16, 24, 32, 48, 64, 128 e 256 pixels.
 A arte foi gerada com a ferramenta image_gen integrada e convertida para ICO.
 Prompt completo e origem em assets/ICON-PROMPT.txt.
 
+
+NOVIDADES 0.7
+Idioma / Language: Português e English, com preferência salva e troca sem reiniciar.
+Documentação completa: README.md (Português) e README.en.md (English).

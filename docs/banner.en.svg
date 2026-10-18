@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="220" viewBox="0 0 1100 220" role="img" aria-label="Base plus update. One folder. inFAMOUS Second Son Extractor">
+<defs><linearGradient id="bg"><stop stop-color="#211b1c"/><stop offset="1" stop-color="#101216"/></linearGradient><pattern id="rain" width="32" height="100" patternUnits="userSpaceOnUse" patternTransform="skewX(-22)"><path d="M1 0v100" stroke="#19e3ff" stroke-opacity=".1"/></pattern></defs>
+<rect width="1100" height="220" rx="16" fill="url(#bg)"/><rect x="690" width="410" height="220" fill="url(#rain)"/>
+<path d="M1010 16l-75 47 50 11-84 53 60 9-64 57" fill="none" stroke="#ff6a2b" stroke-opacity=".5" stroke-width="2"/>
+<text x="40" y="47" fill="#ff6a2b" font-family="Segoe UI,Arial,sans-serif" font-size="12" font-weight="700" letter-spacing="3">INFAMOUS EXTRACTOR</text>
+<text x="38" y="105" fill="#e9e6df" font-family="Segoe UI,Arial,sans-serif" font-size="37" font-weight="800">BASE + UPDATE.</text>
+<text x="38" y="149" fill="#e9e6df" font-family="Segoe UI,Arial,sans-serif" font-size="37" font-weight="800">ONE FOLDER.</text>
+<text x="41" y="185" fill="#a3a9b3" font-family="Segoe UI,Arial,sans-serif" font-size="13">RAR · ZIP · PKG  /  CUSA00223 + 1.07</text>
+<g transform="translate(761 46)" stroke-linecap="round" stroke-linejoin="round"><path d="M71 0v72M46 49l25 25 25-25" stroke="#19e3ff" stroke-width="12" fill="none"/><path d="M25 69L7 99v37h129V99l-18-30M7 99h38l8 13h35l9-13h39" stroke="#ff6a2b" stroke-width="7" fill="none"/></g>
+</svg>

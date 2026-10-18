@@ -1,4 +1,10 @@
-# Verificação da versão 0.6
+# Verificação da versão 0.7
+
+A revisão 0.7 passou por 18 verificações: os 15 casos existentes e três novos grupos de idioma. Foram verificadas a preferência salva em arquivo isolado, a extração/união com exemplos em inglês (incluindo log, relatório e erro próprios), e a troca Português ↔ English sem alterar caminhos ou senhas. As duas interfaces foram renderizadas e inspecionadas. Os testes não modificam a preferência pessoal de idioma.
+
+O teste integral com arquivos reais abaixo pertence à versão 0.6 e não foi repetido para a revisão de idiomas. O mecanismo de extração mantém o mesmo comportamento; as mensagens foram localizadas. Seletores de arquivos do Windows e exceções de componentes externos podem seguir seu próprio idioma.
+
+## Validação da versão 0.6
 
 Em 18/10/2026, o executável foi recompilado a partir dos fontes deste repositório e passou por 15 verificações funcionais:
 

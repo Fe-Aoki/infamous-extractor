@@ -98,6 +98,7 @@ namespace Preparador
 
     sealed class EmberButton : Button
     {
+        public bool Compact { get; set; }
         public bool Primary;
         bool hover, pressed;
         public EmberButton()
@@ -181,9 +182,10 @@ namespace Preparador
                 e.Graphics.DrawPath(pen, p);
             }
 
-            var bounds = new Rectangle(10, pressed ? 2 : 0, Width - 20, Height);
+            int inset = Compact ? 4 : 10;
+            var bounds = new Rectangle(inset, pressed ? 2 : 0, Width - inset * 2, Height);
             using (var b = new SolidBrush(Enabled ? (Primary ? Color.FromArgb(22, 10, 4) : Color.FromArgb(240, 240, 242)) : Color.FromArgb(138, 143, 152)))
-            using (var f = new Font("Segoe UI", Primary ? 16 : 14, FontStyle.Bold, GraphicsUnit.Pixel))
+            using (var f = new Font("Segoe UI", Compact ? 12 : Primary ? 16 : 14, FontStyle.Bold, GraphicsUnit.Pixel))
             using (var fmt = new StringFormat
             {
                 Alignment = StringAlignment.Center,
@@ -295,20 +297,20 @@ namespace Preparador
                 g.DrawImage(icon, 28, 30, 76, 76);
             Draw(g, "inFAMOUS", 36, Skin.Text, 25, 122, true);
             Draw(g, "SECOND SON", 15, Skin.Muted, 28, 166);
-            Draw(g, "PREPARADOR", 12, Skin.Orange, 28, 203);
+            Draw(g, L.T("PREPARADOR"), 12, Skin.Orange, 28, 203);
             using (var p = new Pen(Skin.Line))
                 g.DrawLine(p, 28, 240, Width - 28, 240);
-            Draw(g, "SUA INSTALAÇÃO", 11, Skin.Muted, 28, 263);
+            Draw(g, L.T("SUA INSTALAÇÃO"), 11, Skin.Muted, 28, 263);
             string[] names =
             {
-                "JOGO BASE",
-                "ATUALIZAÇÃO",
-                "PASTA FINAL"
+                L.T("JOGO BASE"),
+                L.T("ATUALIZAÇÃO"),
+                L.T("PASTA FINAL")
             }, hints =
             {
-                "Todas as partes juntas",
+                L.T("Todas as partes juntas"),
                 "Update 1.07",
-                "Base + update unidos"
+                L.T("Base + update unidos")
             };
             for (int i = 0; i < 3; i++)
             {
@@ -322,11 +324,11 @@ namespace Preparador
                     g.DrawString(hints[i], f, b, 69, y + 23);
             }
 
-            Draw(g, "ARQUIVOS PRESERVADOS", 10, Skin.Cyan, 28, Height - 89);
+            Draw(g, L.T("ARQUIVOS PRESERVADOS"), 10, Skin.Cyan, 28, Height - 89);
             using (var f = Skin.Body(12))
             using (var b = new SolidBrush(Skin.Muted))
-                g.DrawString("Seus pacotes originais\npermanecem intactos.", f, b, 28, Height - 66);
-            Draw(g, "v0.6", 10, Skin.Muted, Width - 47, Height - 25);
+                g.DrawString(L.T("Seus pacotes originais\npermanecem intactos."), f, b, 28, Height - 66);
+            Draw(g, "v0.7", 10, Skin.Muted, Width - 47, Height - 25);
         }
 
         protected override void Dispose(bool disposing)
@@ -337,21 +339,57 @@ namespace Preparador
         }
     }
 
+    sealed class LanguagePicker : Panel
+    {
+        readonly EmberButton portuguese = new EmberButton { Text = "Português", Compact = true, Margin = Padding.Empty };
+        readonly EmberButton english = new EmberButton { Text = "English", Compact = true, Margin = Padding.Empty };
+        int selected = -1;
+        public event EventHandler SelectedIndexChanged;
+        public int SelectedIndex
+        {
+            get { return selected; }
+            set
+            {
+                if (value != 0 && value != 1) throw new ArgumentOutOfRangeException("value");
+                if (selected == value) return;
+                selected = value;
+                portuguese.Primary = value == 0;
+                english.Primary = value == 1;
+                portuguese.Invalidate(); english.Invalidate();
+                SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+        }
+        public LanguagePicker()
+        {
+            BackColor = Skin.Rail;
+            Controls.AddRange(new Control[] { portuguese, english });
+            portuguese.Click += (s, e) => SelectedIndex = 0;
+            english.Click += (s, e) => SelectedIndex = 1;
+            Resize += (s, e) =>
+            {
+                portuguese.Bounds = new Rectangle(0, 0, 92, Height);
+                english.Bounds = new Rectangle(94, 0, Width - 94, Height);
+            };
+        }
+    }
+
     public sealed class MainForm : Form
     {
         readonly TextBox baseFile = new TextBox(), updateFile = new TextBox(), destination = new TextBox(), basePassword = new TextBox(), updatePassword = new TextBox(), messages = new TextBox();
         readonly EmberButton start = new EmberButton(), stop = new EmberButton(), open = new EmberButton();
         readonly EmberProgress bar = new EmberProgress();
-        readonly Label state = Skin.Label("PRONTO PARA PREPARAR", 13, Skin.Muted, true), baseCount = Skin.Label("Selecione uma ou todas as partes do jogo.", 12, Skin.Muted), updateCount = Skin.Label("Selecione o update e suas partes, se houver.", 12, Skin.Muted);
+        readonly Label state = Skin.Label(L.T("PRONTO PARA PREPARAR"), 13, Skin.Muted, true), baseCount = Skin.Label(L.T("Selecione uma ou todas as partes do jogo."), 12, Skin.Muted), updateCount = Skin.Label(L.T("Selecione o update e suas partes, se houver."), 12, Skin.Muted);
         readonly List<Control> inputs = new List<Control>();
         readonly ToolTip tips = new ToolTip();
+        readonly LanguagePicker language = new LanguagePicker();
+        int baseResolvedCount = 1, updateResolvedCount = 1;
         CancellationTokenSource cancellation;
         bool running, settingSelection;
         string finished;
         string[] baseSelection, updateSelection;
         public MainForm()
         {
-            Text = "inFAMOUS Second Son — Preparador";
+            Text = L.T("inFAMOUS Second Son — Preparador");
             ClientSize = new Size(1120, 800);
             MinimumSize = new Size(1020, 790);
             StartPosition = FormStartPosition.CenterScreen;
@@ -374,6 +412,27 @@ namespace Preparador
             };
             Controls.Add(stage);
             Controls.Add(rail);
+            var languageLabel = Skin.Label("Idioma / Language", 11, Skin.Muted);
+            languageLabel.Location = new Point(28, rail.Height - 153);
+            languageLabel.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            language.Font = new Font("Segoe UI", 13, FontStyle.Regular, GraphicsUnit.Pixel);
+            language.ForeColor = Skin.Text;
+            language.Size = new Size(168, 34);
+            language.Location = new Point(28, rail.Height - 131);
+            language.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
+            language.AccessibleName = "Idioma / Language";
+            language.SelectedIndex = L.Language == "en" ? 1 : 0;
+            rail.Controls.AddRange(new Control[] { languageLabel, language });
+            inputs.Add(language);
+            language.SelectedIndexChanged += (s, e) =>
+            {
+                L.SetLanguage(language.SelectedIndex == 1 ? "en" : "pt-BR", true);
+                L.Apply(this);
+                RefreshCount(baseFile, baseCount, baseSelection, baseResolvedCount);
+                RefreshCount(updateFile, updateCount, updateSelection, updateResolvedCount);
+                string initial = "Escolha os arquivos da base, o update e uma pasta nova para começar.";
+                if (messages.Text == initial || messages.Text == L.English[initial]) messages.Text = L.T(initial);
+            };
             var layout = new TableLayoutPanel
             {
                 Dock = DockStyle.Fill,
@@ -402,11 +461,11 @@ namespace Preparador
                 Dock = DockStyle.Fill,
                 Margin = Padding.Empty
             };
-            var kicker = Skin.Label("PREPARE O SEU JOGO", 12, Skin.Orange, true);
+            var kicker = Skin.Label(L.T("PREPARE O SEU JOGO"), 12, Skin.Orange, true);
             kicker.Location = new Point(18, 13);
             var heading = new Label
             {
-                Text = "PRONTO PARA SEATTLE.",
+                Text = L.T("PRONTO PARA SEATTLE."),
                 Font = Skin.Display(42),
                 ForeColor = Skin.Text,
                 BackColor = Color.Transparent,
@@ -433,10 +492,10 @@ namespace Preparador
             rows.RowStyles.Add(new RowStyle(SizeType.Absolute, 114));
             rows.RowStyles.Add(new RowStyle(SizeType.Absolute, 114));
             rows.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            rows.Controls.Add(FileRow("01  JOGO BASE", baseFile, basePassword, baseCount, false), 0, 0);
-            rows.Controls.Add(FileRow("02  UPDATE 1.07", updateFile, updatePassword, updateCount, false), 0, 1);
+            rows.Controls.Add(FileRow(L.T("01  JOGO BASE"), baseFile, basePassword, baseCount, false), 0, 0);
+            rows.Controls.Add(FileRow(L.T("02  UPDATE 1.07"), updateFile, updatePassword, updateCount, false), 0, 1);
             destination.Text = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Game-CUSA00223");
-            rows.Controls.Add(FileRow("03  PASTA FINAL", destination, null, null, true), 0, 2);
+            rows.Controls.Add(FileRow(L.T("03  PASTA FINAL"), destination, null, null, true), 0, 2);
             card.Controls.Add(rows);
             layout.Controls.Add(card, 0, 2);
             state.Dock = DockStyle.Fill;
@@ -458,7 +517,7 @@ namespace Preparador
             logLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 22));
             logLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 4));
             logLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            logLayout.Controls.Add(Skin.Label("ANDAMENTO DA PREPARAÇÃO", 10, Skin.Muted, true), 0, 0);
+            logLayout.Controls.Add(Skin.Label(L.T("ANDAMENTO DA PREPARAÇÃO"), 10, Skin.Muted, true), 0, 0);
             bar.Dock = DockStyle.Fill;
             bar.Margin = Padding.Empty;
             logLayout.Controls.Add(bar, 0, 1);
@@ -471,7 +530,7 @@ namespace Preparador
             messages.BorderStyle = BorderStyle.None;
             messages.Font = Skin.Body(12);
             messages.Margin = new Padding(0, 9, 0, 0);
-            messages.Text = "Escolha os arquivos da base, o update e uma pasta nova para começar.";
+            messages.Text = L.T("Escolha os arquivos da base, o update e uma pasta nova para começar.");
             logLayout.Controls.Add(messages, 0, 2);
             logPanel.Controls.Add(logLayout);
             layout.Controls.Add(logPanel, 0, 5);
@@ -482,21 +541,21 @@ namespace Preparador
                 WrapContents = false,
                 Margin = Padding.Empty
             };
-            start.Text = "EXTRAIR E UNIR";
+            start.Text = L.T("EXTRAIR E UNIR");
             start.Primary = true;
             start.Size = new Size(216, 46);
             start.Click += async (s, e) => await StartJob();
-            stop.Text = "Cancelar";
+            stop.Text = L.T("Cancelar");
             stop.Size = new Size(96, 46);
             stop.Enabled = false;
             stop.Click += (s, e) =>
             {
                 cancellation?.Cancel();
                 stop.Enabled = false;
-                state.Text = "CANCELANDO E LIMPANDO TEMPORÁRIOS...";
+                state.Text = L.T("CANCELANDO E LIMPANDO TEMPORÁRIOS...");
             };
-            open.Text = "Abrir pasta final";
-            open.Size = new Size(144, 46);
+            open.Text = L.T("Abrir pasta final");
+            open.Size = new Size(172, 46);
             open.Enabled = false;
             open.Click += (s, e) =>
             {
@@ -511,7 +570,7 @@ namespace Preparador
                 if (!settingSelection)
                 {
                     baseSelection = null;
-                    baseCount.Text = "Caminho informado manualmente; demais volumes serão encontrados na pasta.";
+                    RefreshCount(baseFile, baseCount, null, 1);
                 }
             };
             updateFile.TextChanged += (s, e) =>
@@ -519,7 +578,7 @@ namespace Preparador
                 if (!settingSelection)
                 {
                     updateSelection = null;
-                    updateCount.Text = "Caminho informado manualmente; demais volumes serão encontrados na pasta.";
+                    RefreshCount(updateFile, updateCount, null, 1);
                 }
             };
             FormClosing += (s, e) =>
@@ -529,7 +588,7 @@ namespace Preparador
                     e.Cancel = true;
                     cancellation.Cancel();
                     stop.Enabled = false;
-                    state.Text = "CANCELANDO. AGUARDE A LIMPEZA ANTES DE FECHAR.";
+                    state.Text = L.T("CANCELANDO. AGUARDE A LIMPEZA ANTES DE FECHAR.");
                 }
             };
         }
@@ -569,13 +628,15 @@ namespace Preparador
                 Margin = new Padding(0, 0, 0, 8)
             };
             row.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-            row.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 158));
+            row.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 174));
             row.RowStyles.Add(new RowStyle(SizeType.Absolute, 25));
             row.RowStyles.Add(new RowStyle(SizeType.Absolute, 36));
             row.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            var title = Skin.Label(caption, 12, Skin.Text, true);
+            // Keep the source caption so dialogs also follow a later language switch.
+            foreach (var pair in L.English) if (pair.Value == caption) { caption = pair.Key; break; }
+            var title = Skin.Label(L.T(caption), 12, Skin.Text, true);
             row.Controls.Add(title, 0, 0);
-            var badge = Skin.Label(folder ? "PASTA NOVA" : "RAR  /  ZIP  /  PKG", 10, Skin.Muted);
+            var badge = Skin.Label(folder ? L.T("PASTA NOVA") : "RAR  /  ZIP  /  PKG", 10, Skin.Muted);
             badge.Dock = DockStyle.Right;
             row.Controls.Add(badge, 1, 0);
             var field = TextField(box);
@@ -583,7 +644,7 @@ namespace Preparador
             row.Controls.Add(field, 0, 1);
             var browse = new EmberButton
             {
-                Text = folder ? "Escolher pasta" : "Selecionar partes",
+                Text = folder ? L.T("Escolher pasta") : L.T("Selecionar partes"),
                 Dock = DockStyle.Fill,
                 Margin = Padding.Empty
             };
@@ -591,7 +652,7 @@ namespace Preparador
             row.Controls.Add(browse, 1, 1);
             if (folder)
             {
-                var hint = Skin.Label("O update será aplicado por cima da base, em uma pasta nova.", 12, Skin.Muted);
+                var hint = Skin.Label(L.T("O update será aplicado por cima da base, em uma pasta nova."), 12, Skin.Muted);
                 hint.Padding = new Padding(0, 6, 0, 0);
                 row.Controls.Add(hint, 0, 2);
                 row.SetColumnSpan(hint, 2);
@@ -614,9 +675,9 @@ namespace Preparador
                     AutoSize = false
                 };
                 pw.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-                pw.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 47));
+                pw.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 64));
                 pw.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-                var label = Skin.Label("Senha", 12, Skin.Muted);
+                var label = Skin.Label(L.T("Senha"), 12, Skin.Muted);
                 label.Padding = new Padding(0, 7, 0, 0);
                 pw.Controls.Add(label, 0, 0);
                 password.UseSystemPasswordChar = true;
@@ -630,7 +691,7 @@ namespace Preparador
                 {
                     using (var d = new FolderBrowserDialog
                     {
-                        Description = "Escolha onde criar a pasta final"
+                        Description = L.T("Escolha onde criar a pasta final")
                     }
 
                     )
@@ -640,8 +701,8 @@ namespace Preparador
                 else
                     using (var d = new OpenFileDialog
                     {
-                        Title = "Selecione uma ou todas as partes — " + caption,
-                        Filter = "Arquivos de jogo|*.pkg;*.rar;*.zip;*.001;*.002;*.003;*.r00;*.z01|Todos os arquivos|*.*",
+                        Title = L.T("Selecione uma ou todas as partes — ") + L.T(caption),
+                        Filter = L.T("Arquivos de jogo|*.pkg;*.rar;*.zip;*.001;*.002;*.003;*.r00;*.z01|Todos os arquivos|*.*"),
                         Multiselect = true,
                         CheckFileExists = true
                     }
@@ -656,16 +717,22 @@ namespace Preparador
                                 settingSelection = true;
                                 box.Text = resolved[0];
                                 if (box == baseFile)
+                                {
                                     baseSelection = selected;
+                                    baseResolvedCount = resolved.Length;
+                                }
                                 else
+                                {
                                     updateSelection = selected;
-                                count.Text = selected.Length + " arquivo(s) selecionado(s) · " + (resolved.Length == 1 ? "demais volumes lidos automaticamente" : "ZIPs extraídos em sequência");
+                                    updateResolvedCount = resolved.Length;
+                                }
+                                RefreshCount(box, count, selected, resolved.Length);
                                 count.ForeColor = Skin.Cyan;
                                 tips.SetToolTip(box, string.Join(Environment.NewLine, selected));
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(this, ex.Message, "Seleção de partes", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                MessageBox.Show(this, ex.Message, L.T("Seleção de partes"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             }
                             finally
                             {
@@ -674,6 +741,16 @@ namespace Preparador
                         }
             };
             return row;
+        }
+
+        void RefreshCount(TextBox box, Label count, string[] selection, int resolvedCount)
+        {
+            if (selection != null)
+                count.Text = selection.Length + L.T(" arquivo(s) selecionado(s) · ") + (resolvedCount == 1 ? L.T("demais volumes lidos automaticamente") : L.T("ZIPs extraídos em sequência"));
+            else if (!string.IsNullOrWhiteSpace(box.Text))
+                count.Text = L.T("Caminho informado manualmente; demais volumes serão encontrados na pasta.");
+            else
+                count.Text = L.T(box == baseFile ? "Selecione uma ou todas as partes do jogo." : "Selecione o update e suas partes, se houver.");
         }
 
         void Ui(Action action)
@@ -712,7 +789,7 @@ namespace Preparador
             messages.Clear();
             bar.Value = 0;
             cancellation = new CancellationTokenSource();
-            state.Text = "PREPARANDO...";
+            state.Text = L.T("PREPARANDO...");
             state.ForeColor = Skin.Orange;
             try
             {
@@ -722,23 +799,23 @@ namespace Preparador
                     state.Text = text.ToUpperInvariant();
                 }), cancellation.Token);
                 finished = await Task.Run(() => engine.Run(job));
-                state.Text = "CONCLUÍDO · SELECIONE A PASTA NO LAUNCHER DO JOGO";
+                state.Text = L.T("CONCLUÍDO · SELECIONE A PASTA NO LAUNCHER DO JOGO");
                 state.ForeColor = Color.FromArgb(53, 208, 127);
                 open.Enabled = true;
-                Log("Arquivos originais preservados.");
+                Log(L.T("Arquivos originais preservados."));
             }
             catch (OperationCanceledException)
             {
-                state.Text = "OPERAÇÃO CANCELADA";
+                state.Text = L.T("OPERAÇÃO CANCELADA");
                 state.ForeColor = Skin.Yellow;
-                Log("Cancelado. Arquivos de entrada preservados.");
+                Log(L.T("Cancelado. Arquivos de entrada preservados."));
             }
             catch (Exception ex)
             {
-                state.Text = "NÃO FOI POSSÍVEL CONCLUIR";
+                state.Text = L.T("NÃO FOI POSSÍVEL CONCLUIR");
                 state.ForeColor = Color.FromArgb(255, 77, 77);
-                Log("ERRO: " + ex.Message);
-                MessageBox.Show(this, ex.Message, "Preparação interrompida", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Log(L.T("ERRO: ") + ex.Message);
+                MessageBox.Show(this, ex.Message, L.T("Preparação interrompida"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             finally
             {

@@ -63,6 +63,7 @@ namespace Preparador
                 }
             }
 
+            L.LoadPreference();
             Application.Run(new MainForm());
             return 0;
         }
@@ -205,6 +206,8 @@ namespace Preparador
         {
             output = Path.GetFullPath(output);
             Directory.CreateDirectory(output);
+            L.PreferenceFile = Path.Combine(output, "test-language.txt");
+            L.SetLanguage("pt-BR");
             string fixture = Path.Combine(output, "fixtures-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(fixture);
             var results = new System.Collections.Generic.List<string>();
@@ -409,6 +412,21 @@ namespace Preparador
                 results.Add("PASS: RAR com link simbólico bloqueado antes da extração");
             }
 
+            L.SetLanguage("en", true);
+            L.SetLanguage("pt-BR");
+            L.LoadPreference();
+            Check(L.Language == "en", "Language preference was not restored");
+            results.Add("PASS: preferência de idioma salva e restaurada em arquivo de teste isolado");
+            var englishLog = new System.Collections.Generic.List<string>();
+            new Engine(englishLog.Add, (n, text) => { }, CancellationToken.None).Run(new Job { Base = bz, Update = uz, Destination = Path.Combine(fixture, "english-result") });
+            Check(englishLog.Any(s => s == "Preparing base game...") && englishLog.Any(s => s.StartsWith("Ready: ")), "Engine log was not translated");
+            Check(File.ReadAllText(Path.Combine(fixture, "english-result", "PREPARACAO.txt")).Contains("Structural check completed."), "Preparation report was not translated");
+            bool englishError = false;
+            try { Engine.ResolveSources(Path.Combine(fixture, "missing.pkg"), null); }
+            catch (FileNotFoundException ex) { englishError = ex.Message.StartsWith("Part not found: "); }
+            Check(englishError, "Application error was not translated");
+            results.Add("PASS: extração e união em inglês, log, relatório final e erro traduzidos");
+            L.SetLanguage("pt-BR");
             using (var form = new MainForm())
             {
                 ((TextBox)typeof(MainForm).GetField("destination", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic).GetValue(form)).Text = @"C:\Jogos\inFAMOUS\Game-CUSA00223";
@@ -420,6 +438,28 @@ namespace Preparador
                     image.Save(Path.Combine(output, "Interface.png"));
                 }
 
+                var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var baseBox = (TextBox)typeof(MainForm).GetField("baseFile", flags).GetValue(form);
+                var passBox = (TextBox)typeof(MainForm).GetField("basePassword", flags).GetValue(form);
+                var selector = (LanguagePicker)typeof(MainForm).GetField("language", flags).GetValue(form);
+                var startButton = (Button)typeof(MainForm).GetField("start", flags).GetValue(form);
+                baseBox.Text = @"C:\Archives\game.part1.rar";
+                passBox.Text = "test-password";
+                selector.SelectedIndex = 1;
+                Application.DoEvents();
+                Check(form.Text.EndsWith("Extractor") && startButton.Text == "EXTRACT & MERGE", "Language selector did not update UI");
+                Check(baseBox.Text == @"C:\Archives\game.part1.rar" && passBox.Text == "test-password", "Language switch changed inputs");
+                selector.SelectedIndex = 0;
+                Application.DoEvents();
+                Check(startButton.Text == "EXTRAIR E UNIR" && passBox.Text == "test-password", "Portuguese round trip failed");
+                baseBox.Clear(); passBox.Clear(); selector.SelectedIndex = 1;
+                Application.DoEvents();
+                using (var image = new Bitmap(form.Width, form.Height))
+                {
+                    form.DrawToBitmap(image, new Rectangle(Point.Empty, form.Size));
+                    image.Save(Path.Combine(output, "Interface-English.png"));
+                }
+                results.Add("PASS: troca Português ↔ English sem perder caminhos ou senhas; interface nos dois idiomas");
                 form.Close();
             }
 

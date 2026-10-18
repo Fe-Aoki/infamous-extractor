@@ -1,3 +1,5 @@
+<p align="center"><strong>Português (Brasil)</strong> | <a href="README.en.md">English</a></p>
+
 <p align="center">
   <img src="assets/infamous.png" width="120" alt="Ícone do inFAMOUS Extractor: seta azul e bandeja laranja" />
 </p>
@@ -15,7 +17,7 @@
   <img alt="Windows x64" src="https://img.shields.io/badge/Windows-x64-4d8bff?style=flat-square" />
   <img alt="C sharp" src="https://img.shields.io/badge/C%23-WinForms-ff6a2b?style=flat-square" />
   <img alt="Licença GPL 3" src="https://img.shields.io/badge/licen%C3%A7a-GPL--3.0--or--later-35d07f?style=flat-square" />
-  <img alt="Versão 0.6" src="https://img.shields.io/badge/vers%C3%A3o-0.6-f5c400?style=flat-square" />
+  <img alt="Versão 0.7" src="https://img.shields.io/badge/vers%C3%A3o-0.7-f5c400?style=flat-square" />
 </p>
 
 <p align="center">
@@ -44,6 +46,7 @@ Preparador com interface para **inFAMOUS Second Son CUSA00223 + update 1.07**. S
 | `.pkg` compatível | Extrai o PFS com a correção de leitura integral de setores. |
 | Base + update | Confere título/tipo/versão dos PKGs e aplica os arquivos do update por cima da base. |
 
+- Português (Brasil) e English, com troca sem reiniciar e preferência salva.
 - Tema escuro, destaque laranja e ícone de extração próprio.
 - Senhas separadas para base e update.
 - Cancelamento, registro do andamento e verificação de espaço por etapa.
@@ -55,7 +58,7 @@ Preparador com interface para **inFAMOUS Second Son CUSA00223 + update 1.07**. S
 ## Como usar
 
 1. Obtenha o **pacote compilado completo** fornecido na release. O ZIP de código-fonte do GitHub não contém o aplicativo compilado.
-2. Extraia todo o pacote e abra `Preparador-inFAMOUS.exe`.
+2. Extraia todo o pacote e abra `Preparador-inFAMOUS.exe`. Em **Idioma / Language**, escolha **Português** ou **English**.
 3. Em **Jogo base**, clique em **Selecionar partes**. Use **Ctrl** ou **Shift** para escolher os volumes juntos.
 4. Selecione o **update 1.07** no campo separado.
 5. Informe as senhas, se houver, e escolha uma **pasta final nova**.
@@ -86,7 +89,13 @@ Ter apenas `eboot.bin` não comprova que a instalação esteja completa. O launc
 
 Os temporários ficam ao lado do destino em `.iss-preparador-<identificador>`. O programa tenta limpá-los ao concluir, cancelar ou falhar. Se não conseguir, informa o caminho no log.
 
+### Idioma
+
+Na primeira abertura, o programa usa português em um Windows configurado em português e inglês nos demais casos. A escolha é salva em `%LOCALAPPDATA%\Preparador-inFAMOUS\language.txt`. Trocar de idioma mantém os caminhos, senhas e seleções. O seletor fica desativado durante a preparação. Logs já escritos mantêm o idioma original. Botões dos seletores de arquivos do Windows e mensagens de bibliotecas externas podem seguir o idioma do próprio sistema ou componente.
+
 ## Verificação
+
+A versão **0.7 passou por 18 testes funcionais**, incluindo preferência salva, troca nos dois sentidos sem perda de entradas, erros e logs traduzidos, extração/união em inglês e renderização das duas interfaces. A extração integral abaixo foi feita na 0.6; não foi repetida para a revisão de idiomas.
 
 A versão 0.6 passou por **15 verificações funcionais** e por uma **extração integral de base e update 1.07**, usando o executável em modo de automação e o mesmo motor da interface.
 
@@ -143,11 +152,4 @@ Dependências e fontes mantêm suas licenças originais. Detalhes em [THIRD_PART
 
 ---
 
-<details>
-<summary><strong>English</strong></summary>
-
-A Windows desktop preparation tool for **inFAMOUS Second Son CUSA00223 + update 1.07**. Select your own RAR/ZIP volumes or compatible PKGs, extract the base game and apply the update to a new output folder. Original input files are preserved.
-
-This independent early-stage project includes no game files and does not download games. It is not the game launcher. Runtime: Windows x64 and .NET Framework 4.8. Build instructions use PowerShell 7.6. Version 0.6 passed 15 checks and a full real-game extraction through its automation entry point, using the same engine as the GUI. All 1,847 resulting files matched a previously working local installation by SHA-256; this is not an official reference manifest.
-
-</details>
+A documentação completa também está disponível em [English](README.en.md).
