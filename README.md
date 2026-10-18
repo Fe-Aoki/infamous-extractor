@@ -63,6 +63,20 @@ Preparador com interface para **inFAMOUS Second Son CUSA00223 + update 1.07**. S
 
 Mantenha todos os volumes completos na mesma pasta e com os nomes originais. O programa não baixa partes ausentes. DLCs extras são ignorados e informados no log.
 
+### E se o jogo veio de outro pacote ou já está em uma pasta?
+
+O formato e o conteúdo dos arquivos determinam a compatibilidade. O preparador é direcionado a **inFAMOUS Second Son, região/título CUSA00223, com update 1.07**. O teste integral foi feito com um conjunto específico; outros pacotes não têm compatibilidade garantida.
+
+| O que você tem | Como proceder |
+| --- | --- |
+| Uma pasta contendo RARs, ZIPs ou um PKG | Selecione os **arquivos dentro da pasta** nos campos de base e update. Os volumes precisam estar completos. |
+| Um único RAR ou ZIP | Selecione o arquivo. Não é obrigatório o jogo vir em três partes. O conteúdo ainda precisa ser compatível. |
+| Jogo já extraído, com `eboot.bin` e as pastas do jogo | A versão atual **não aceita uma pasta extraída como entrada**. Se a instalação já estiver completa e com o update exigido, selecione essa pasta diretamente no launcher iss_pc. |
+| Base já extraída e update ainda separado | A versão atual não aplica um update sobre uma pasta existente. Para preparar pelo aplicativo, use os arquivos de base e update aceitos e escolha um destino novo. |
+| Outra região, outro jogo ou outra versão de update | Não há suporte garantido. Não renomeie pastas ou arquivos para tentar torná-los compatíveis. |
+
+Ter apenas `eboot.bin` não comprova que a instalação esteja completa. O launcher também depende dos demais arquivos esperados e da versão correta do jogo. O preparador não converte regiões, não corrige qualquer pacote e não transforma um jogo diferente em uma instalação compatível.
+
 ### Requisitos e espaço
 
 - Windows x64 com **.NET Framework 4.8**.
