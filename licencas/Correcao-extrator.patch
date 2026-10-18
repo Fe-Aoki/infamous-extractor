@@ -1,0 +1,19 @@
+diff --git a/LibOrbisPkg/PFS/PFSCReader.cs b/LibOrbisPkg/PFS/PFSCReader.cs
+index 12c6c1b..083924a 100644
+--- a/LibOrbisPkg/PFS/PFSCReader.cs
++++ b/LibOrbisPkg/PFS/PFSCReader.cs
+@@ -84,7 +84,13 @@ namespace LibOrbisPkg.PFS
+         using (var bufStream = new MemoryStream(sectorBuf))
+         using (var ds = new DeflateStream(bufStream, CompressionMode.Decompress))
+         {
+-          ds.Read(output, 0, hdr.BlockSz);
++          int filled = 0;
++          while (filled < hdr.BlockSz)
++          {
++            int read = ds.Read(output, filled, hdr.BlockSz - filled);
++            if (read == 0) throw new EndOfStreamException("Truncated decompressed PFS sector");
++            filled += read;
++          }
+         }
+       }
+     }

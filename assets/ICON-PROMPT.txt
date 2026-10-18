@@ -1,0 +1,6 @@
+Generated with the built-in image_gen tool on 2026-10-18.
+Reference: rounded-square Seattle/smoke/fire icon supplied by the user.
+PNG retained with alpha. ICO converted locally at standard Windows sizes.
+
+Prompt:
+Create a polished Windows application icon for an archive extractor using the attached image as visual reference. Keep the same rounded square silhouette, very dark blue Seattle rainy skyline, orange ember/smoke spiral with a thin electric cyan streak. Adapt and simplify the composition so the unmistakable main foreground symbol is ARCHIVE EXTRACTION: a strong large downward arrow emerging from an archive container into an open box/tray, centered, occupying about 60 percent of the icon. Use a clean thick cyan/near-white luminous arrow and a bold orange illuminated open-box/tray silhouette, with dark solid separation so both remain recognizable at 32 and 48 pixels. Keep the stormy smoke/fire behind this symbol atmospheric and secondary, reduce tiny skyline details. Premium cinematic dark game launcher aesthetic, strong simple readable symbol rather than multiple overlapping icons. Square 1024x1024 PNG, generous rounded corners with truly transparent outside corners, no text, no letters, no words, no border, no additional surrounding canvas.

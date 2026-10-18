@@ -1,0 +1,112 @@
+PREPARADOR inFAMOUS — versão 0.6
+Windows x64 / .NET Framework 4.8. Não exige PowerShell para usar.
+
+COMO USAR
+1. Extraia TODO o ZIP do aplicativo para uma pasta.
+2. Abra Preparador-inFAMOUS.exe.
+3. Em Jogo base, selecione o PKG ou uma/todas as partes RAR/ZIP do jogo.
+4. Em Update, selecione o pacote ou todas as partes da atualização 1.07.
+5. Escolha uma pasta FINAL NOVA, onde a instalação será criada.
+6. Preencha as senhas dos arquivos, se houver, e clique Extrair e unir.
+7. Quando terminar, escolha a pasta criada no launcher do iss_pc.
+
+Todas as partes precisam estar completas e juntas, com os nomes originais.
+RAR: normalmente selecione .part1.rar (também reconhece .part01.rar).
+ZIP dividido: selecione .zip.001. Também reconhece .z01 com .zip principal.
+Se selecionar uma parte posterior, o programa procura a primeira parte.
+PKGs dentro dos arquivos são identificados pelos metadados: CUSA00223,
+base (gd) ou update (gp), com update 01.07. DLCs adicionais são ignorados
+e aparecem no log. Se houver mais de um PKG principal compatível, interrompe
+para evitar escolher o pacote errado. Arquivos com uma pasta de jogo já
+extraída também são aceitos se contiverem eboot.bin e param.sfo compatíveis.
+
+ESPAÇO E ARQUIVOS
+Use uma unidade local com espaço para a instalação E os temporários.
+Para o jogo completo em arquivos comprimidos, pode ser necessário algo
+próximo de 50–60 GB livres, dependendo do conteúdo. O programa confere o
+espaço por etapa e mantém uma margem de 1 GB. Não faz leitura direta dos
+dados internos de partes RAR: primeiro descompacta o pacote temporário.
+Os temporários ficam ao lado da pasta final, em .iss-preparador-<identificador>.
+O programa tenta limpá-los ao concluir, cancelar ou encontrar um erro.
+Se não conseguir limpar, o caminho aparece no log.
+
+RAR, ZIP e PKG originais NUNCA são apagados por este aplicativo.
+Uma pasta de instalação existente NÃO é sobrescrita. A pasta final só é
+publicada quando a preparação e a verificação estrutural terminam.
+Cancelamento pode demorar brevemente até a etapa atual ser interrompida.
+Não mova nem renomeie arquivos de entrada durante a preparação.
+
+ESCOPO
+Este é um preparador de arquivos para inFAMOUS Second Son CUSA00223 com
+update 1.07. Não é o launcher oficial, não baixa jogos, não inclui jogos,
+não instala drivers e não altera o código do jogo ou do launcher.
+O extrator PKG usa LibOrbisPkg com a correção de leitura PFSC integral.
+Só são aceitos PKGs compatíveis com chave PFS recuperável pela biblioteca;
+não é um extrator universal de qualquer pacote de PS4.
+A verificação final confere a estrutura e arquivos essenciais, não todos
+os hashes de uma cópia de referência e não garante desempenho do jogo.
+Não monta DLCs e não configura automaticamente a pasta no launcher oficial.
+
+LOGS
+O andamento fica na janela. Um log é salvo em:
+%LOCALAPPDATA%\Preparador-inFAMOUS\logs
+As senhas não são gravadas pelo aplicativo. Elas são passadas ao processo
+local do 7-Zip enquanto necessário. Logs podem conter caminhos de arquivos.
+
+TESTES DESTA COMPILAÇÃO
+Veja RESULTADO-DOS-TESTES.txt. Foram usados PKGs e ZIPs sintéticos, ZIP
+dividido e protegido por senha, e uma amostra pública RAR5. Não reextraímos
+o jogo completo de dezenas de GB nesta versão da interface, porque os
+pacotes grandes anteriores já haviam sido apagados.
+
+CRÉDITOS / FONTES
+Interface e integração local: GPL-3.0-or-later, fontes em fontes/.
+LibOrbisPkg: Maxton e colaboradores, LGPL-3.0.
+https://github.com/maxton/LibOrbisPkg
+Base: 643477263b2644e0803e0f58b8726ea4e3f3b7d4.
+Alteração: PFSCReader.cs repete Read até preencher o setor ou informar EOF.
+7-Zip 26.04: Igor Pavlov, licença e restrição unRAR em tools/LICENSE-7zip.txt.
+https://www.7-zip.org/
+O fonte oficial correspondente do 7-Zip está em fontes/7z2604-src.tar.xz.
+As licenças completas e a correção da biblioteca estão em licencas/.
+Este pacote é independente e não é uma versão oficial de nenhum desses projetos.
+
+COMPILAR / CONFERIR
+fontes/Compilar.ps1 recompila usando PowerShell 7.6 x64 e o compilador Roslyn
+que o acompanha. A aplicação resultante usa .NET Framework, sem depender
+do PowerShell para executar. Feche o aplicativo antes de recompilar.
+O modo opcional de autoteste é:
+Preparador-inFAMOUS.exe --selftest "D:\testes-preparador"
+Ele cria pequenos arquivos de teste nessa pasta e não os apaga.
+Os testes RAR opcionais usam rar-test.rar e rar-link-test.rar nessa pasta;
+as amostras de terceiros não foram incluídas na distribuição.
+
+NOVIDADES 0.2
+Tema escuro com as cores e fontes do launcher HayatoG/iss_pc.
+Use Ctrl+clique ou Shift+clique para selecionar várias partes na janela de arquivos.
+A interface mostra a quantidade selecionada. Volumes do mesmo arquivo são
+agrupados e lidos pela primeira parte, sem descompactar o mesmo conjunto várias vezes.
+ZIPs independentes são extraídos em sequência e unidos na mesma área temporária.
+RARs de conjuntos diferentes e múltiplos PKGs na mesma seleção são recusados.
+Todas as partes divididas devem permanecer na mesma pasta.
+Fontes Barlow e Big Shoulders Stencil Display: licenças OFL incluídas.
+Ícone, identidade visual e referência de tema: https://github.com/HayatoG/iss_pc
+Imagem assets/infamous.png e assets/infamous.ico: variante de extração gerada com IA a partir da referência visual fornecida pelo usuário.
+Não foi incluída a arte pic1.png extraída do jogo.
+
+NOVIDADES 0.3
+Botões com Segoe UI em negrito e texto centralizado. A fonte stencil foi mantida nos títulos.
+Corrigida a pintura dos fundos e cantos arredondados dos botões.
+Estados de foco, hover, clique e desabilitado redesenhados com contraste consistente.
+
+NOVIDADES 0.4
+Altura fixa e linha de layout explícita nos campos de senha, evitando corte da borda inferior.
+Espaçamento vertical dos campos ajustado e interface renderizada para conferência.
+
+NOVIDADES 0.5
+Ícone de extração próprio: seta azul e bandeja laranja com estética de fumaça e brasas.
+Ícone aplicado na barra lateral, janela e recursos do executável Windows.
+O ICO contém resoluções 16, 24, 32, 48, 64, 128 e 256 pixels.
+A arte foi gerada com a ferramenta image_gen integrada e convertida para ICO.
+Prompt completo e origem em assets/ICON-PROMPT.txt.
+
